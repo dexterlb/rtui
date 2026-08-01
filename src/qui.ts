@@ -27,9 +27,9 @@ class QUI {
                 this.buckets.get(bucket).handler = bucket_handler;
             } else {
                 this.buckets.set(bucket, { t: "action", handler: bucket_handler });
+                this.queue.push(this.buckets.get(bucket));
             }
 
-            this.queue.push(bucket_handler);
             return
         }
 
