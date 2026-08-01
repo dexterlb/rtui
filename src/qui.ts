@@ -30,15 +30,30 @@ class QUI {
 
             const bucket_handler = async () => {
                 this.buckets.delete(bucket);
+                const prev_resetter = this.resetters.get(bucket);
+                if (prev_resetter) {
+                    clearTimeout(prev_resetter);
+                    this.resetters.delete(bucket);
+                }
                 return await handler();
             };
 
+            var bucket_reset: (() => void) | undefined = undefined;
+            if (reset) {
+                bucket_reset = () => {
+                    reset();
+                    this.resetters.delete(bucket);
+                };
+            }
+
             var bucket_action = this.buckets.get(bucket)
             if (bucket_action !== undefined) {
-                // override the previous handler
+                // override the previously queued action in place
                 bucket_action.handler = bucket_handler;
+                bucket_action.reset = bucket_reset;
+                bucket_action.reset_after = reset_after;
             } else {
-                bucket_action = { t: "action", bucket: bucket, handler: bucket_handler, reset: reset, reset_after: reset_after }
+                bucket_action = { t: "action", bucket: bucket, handler: bucket_handler, reset: bucket_reset, reset_after: reset_after }
                 this.buckets.set(bucket, bucket_action);
                 this.queue.push(bucket_action);
             }

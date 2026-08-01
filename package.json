@@ -6,7 +6,13 @@
     ".": "./src/index.ts"
   },
   "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@borewit/async-queue": "^0.1.2"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
   }
 }
