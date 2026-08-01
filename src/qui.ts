@@ -18,16 +18,18 @@ class QUI {
     public add(handler: ActionHandler, bucket?: string) {
         if (bucket !== undefined) {
             const bucket_handler = async () => {
-                buckets.delete(bucket);
-                return await handler;
+                this.buckets.delete(bucket);
+                return await handler();
             };
 
-            if (this.buckets.has(bucket)) {
+            var bucket_action = this.buckets.get(bucket)
+            if (bucket_action !== undefined) {
                 // override the previous handler
-                this.buckets.get(bucket).handler = bucket_handler;
+                bucket_action.handler = bucket_handler;
             } else {
-                this.buckets.set(bucket, { t: "action", handler: bucket_handler });
-                this.queue.push(this.buckets.get(bucket));
+                bucket_action = { t: "action", handler: bucket_handler }
+                this.buckets.set(bucket, bucket_action);
+                this.queue.push(bucket_action);
             }
 
             return
@@ -59,4 +61,6 @@ class QUI {
             }
         }
     }
+
+    private buckets: Map<string, Action> = new Map();
 }

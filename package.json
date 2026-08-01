@@ -7,5 +7,6 @@
   },
   "type": "module",
   "dependencies": {
+    "@borewit/async-queue": "^0.1.2"
   }
 }
