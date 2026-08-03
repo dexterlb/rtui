@@ -8,12 +8,14 @@
   },
   "type": "module",
   "scripts": {
-    "test": "tsc --noEmit && vitest run"
+    "test": "tsc --noEmit && vitest run",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "preact": "^10.29.8"
   },
   "devDependencies": {
+    "prettier": "^3.9.6",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   }
