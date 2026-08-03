@@ -10,8 +10,7 @@ export type DoOpts = {
 type State =
   | { status: "idle" }
   | { status: "exec" }
-  | { status: "exec_and"; pending: ActionHandler; opts: DoOpts }
-  | { status: "settling" };
+  | { status: "exec_and"; pending: ActionHandler; opts: DoOpts };
 
 export class Throttler {
   constructor(private dflt_opts?: DoOpts) {}
@@ -25,7 +24,7 @@ export class Throttler {
     }
 
     const state = this.get_state();
-    if (state.status == "idle" || state.status == "settling") {
+    if (state.status == "idle") {
       this.fork_action(action, opts);
     } else {
       // An action is already in progress, so queue this one to run after.
@@ -70,14 +69,13 @@ export class Throttler {
     }
 
     if (opts.sync_back_after !== undefined) {
-      this.set_state({ status: "settling" });
       this.sync_back_timer = setTimeout(
         () => this.do_sync_back(opts),
         opts.sync_back_after,
       );
-    } else {
-      this.set_state({ status: "idle" });
     }
+
+    this.set_state({ status: "idle" });
   }
 
   private do_sync_back(opts: DoOpts) {
