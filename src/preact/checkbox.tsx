@@ -1,3 +1,4 @@
+/** @jsxImportSource preact */
 import { useEffect, useState } from "preact/hooks";
 import useRT from "./rt.ts";
 
