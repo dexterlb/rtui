@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "main": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./preact": "./src/preact/index.ts"
   },
   "type": "module",
   "scripts": {
     "test": "tsc --noEmit && vitest run"
   },
   "dependencies": {
-    "@borewit/async-queue": "^0.1.2"
+    "preact": "^10.29.8"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
