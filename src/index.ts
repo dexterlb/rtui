@@ -1,1 +1,1 @@
-export { QUI } from "./qui"
+export { Throttler } from "./throttler"
