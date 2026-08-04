@@ -32,6 +32,7 @@ export function Button(props: ButtonProps) {
   return (
     <button
       className={[busyClass, props.className].filter(Boolean).join(" ")}
+      disabled={busy}
       onClick={doAction}
     >
       {props.label}
