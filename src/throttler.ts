@@ -2,65 +2,65 @@ export type ActionHandler = () => Promise<void>;
 export type ErrHandler = (err: any) => void;
 
 export type DoOpts = {
-  sync_back?: () => void;
-  sync_back_after?: number;
-  err_handler?: ErrHandler;
+  syncBack?: () => void;
+  syncBackAfter?: number;
+  errHandler?: ErrHandler;
 };
 
 type State =
   | { status: "idle" }
   | { status: "exec" }
-  | { status: "exec_and"; pending: ActionHandler; opts: DoOpts };
+  | { status: "execAnd"; pending: ActionHandler; opts: DoOpts };
 
 export class Throttler {
-  constructor(private dflt_opts?: DoOpts) {}
+  constructor(private dfltOpts?: DoOpts) {}
 
   public do(action: ActionHandler, opts?: DoOpts) {
     if (opts === undefined) {
-      opts = this.dflt_opts;
+      opts = this.dfltOpts;
     }
     if (opts === undefined) {
       opts = {};
     }
 
-    const state = this.get_state();
+    const state = this.getState();
     if (state.status == "idle") {
-      this.fork_action(action, opts);
+      this.forkAction(action, opts);
     } else {
       // An action is already in progress, so queue this one to run after.
       // A newly-posted action overrides the current pending action, so
       // there is at most one pending action.
-      this.set_state({ status: "exec_and", pending: action, opts: opts });
+      this.setState({ status: "execAnd", pending: action, opts: opts });
     }
   }
 
-  private fork_action(action: ActionHandler, opts: DoOpts) {
-    this.exec_action(action, opts); // no await lmaoo
+  private forkAction(action: ActionHandler, opts: DoOpts) {
+    this.execAction(action, opts); // no await lmaoo
   }
 
-  private async exec_action(action: ActionHandler, opts: DoOpts) {
-    if (this.sync_back_timer) {
-      clearTimeout(this.sync_back_timer);
-      this.sync_back_timer = null;
+  private async execAction(action: ActionHandler, opts: DoOpts) {
+    if (this.syncBackTimer) {
+      clearTimeout(this.syncBackTimer);
+      this.syncBackTimer = null;
     }
 
     while (true) {
-      this.set_state({ status: "exec" });
+      this.setState({ status: "exec" });
       try {
         await action();
       } catch (err) {
-        if (opts.err_handler) {
-          opts.err_handler(err);
+        if (opts.errHandler) {
+          opts.errHandler(err);
         } else {
           console.error("UI action failed: ", err);
         }
-        if (opts.sync_back) {
-          opts.sync_back();
+        if (opts.syncBack) {
+          opts.syncBack();
         }
       }
 
-      const state = this.get_state();
-      if (state.status == "exec_and") {
+      const state = this.getState();
+      if (state.status == "execAnd") {
         action = state.pending;
         opts = state.opts;
         continue;
@@ -68,31 +68,31 @@ export class Throttler {
       break;
     }
 
-    if (opts.sync_back_after !== undefined) {
-      this.sync_back_timer = setTimeout(
-        () => this.do_sync_back(opts),
-        opts.sync_back_after,
+    if (opts.syncBackAfter !== undefined) {
+      this.syncBackTimer = setTimeout(
+        () => this.doSyncBack(opts),
+        opts.syncBackAfter,
       );
     }
 
-    this.set_state({ status: "idle" });
+    this.setState({ status: "idle" });
   }
 
-  private do_sync_back(opts: DoOpts) {
-    this.sync_back_timer = null;
-    if (opts.sync_back) {
-      opts.sync_back();
+  private doSyncBack(opts: DoOpts) {
+    this.syncBackTimer = null;
+    if (opts.syncBack) {
+      opts.syncBack();
     }
-    this.set_state({ status: "idle" });
+    this.setState({ status: "idle" });
   }
 
-  private get_state(): State {
+  private getState(): State {
     return this.state;
   }
-  private set_state(state: State) {
+  private setState(state: State) {
     this.state = state;
   }
 
   private state: State = { status: "idle" };
-  private sync_back_timer: ReturnType<typeof setTimeout> | null = null;
+  private syncBackTimer: ReturnType<typeof setTimeout> | null = null;
 }

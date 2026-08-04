@@ -41,106 +41,106 @@ describe("Throttler.do", () => {
     {
       const t = new Throttler();
 
-      let num_syncs = 0;
-      let last_err = null;
+      let numSyncs = 0;
+      let lastErr = null;
       t.do(
         async () => {
           throw new Error("boom");
         },
         {
-          sync_back: () => {
-            num_syncs++;
+          syncBack: () => {
+            numSyncs++;
           },
-          err_handler: (err) => {
-            last_err = err;
+          errHandler: (err) => {
+            lastErr = err;
           },
         },
       );
 
       await sleep(50);
-      expect(num_syncs).toBe(1);
-      expect(last_err).not.toBe(null);
+      expect(numSyncs).toBe(1);
+      expect(lastErr).not.toBe(null);
     }
 
     {
       const t = new Throttler();
 
-      let num_syncs = 0;
+      let numSyncs = 0;
       t.do(async () => {}, {
-        sync_back: () => {
-          num_syncs++;
+        syncBack: () => {
+          numSyncs++;
         },
       });
 
       await sleep(50);
-      expect(num_syncs).toBe(0);
+      expect(numSyncs).toBe(0);
     }
   });
 
-  it("calls the syncer sync_back_after ms after a successful action", async () => {
+  it("calls the syncer syncBackAfter ms after a successful action", async () => {
     const t = new Throttler();
 
-    let num_syncs = 0;
+    let numSyncs = 0;
     t.do(async () => {}, {
-      sync_back: () => {
-        num_syncs++;
+      syncBack: () => {
+        numSyncs++;
       },
-      sync_back_after: 80,
+      syncBackAfter: 80,
     });
 
     await sleep(30);
-    expect(num_syncs).toBe(0);
+    expect(numSyncs).toBe(0);
 
     await sleep(120);
-    expect(num_syncs).toBe(1);
+    expect(numSyncs).toBe(1);
   });
 
-  it("calls the syncer once, sync_back_after ms after the last action", async () => {
+  it("calls the syncer once, syncBackAfter ms after the last action", async () => {
     const t = new Throttler();
 
-    let num_syncs = 0;
+    let numSyncs = 0;
     const syncer = () => {
-      num_syncs++;
+      numSyncs++;
     };
     const slow = () => async () => {
       await sleep(60);
     };
 
-    t.do(slow(), { sync_back: syncer, sync_back_after: 40 });
+    t.do(slow(), { syncBack: syncer, syncBackAfter: 40 });
     await sleep(20);
-    t.do(slow(), { sync_back: syncer, sync_back_after: 40 });
-    t.do(slow(), { sync_back: syncer, sync_back_after: 40 });
+    t.do(slow(), { syncBack: syncer, syncBackAfter: 40 });
+    t.do(slow(), { syncBack: syncer, syncBackAfter: 40 });
 
     await sleep(250);
-    expect(num_syncs).toBe(1);
+    expect(numSyncs).toBe(1);
   });
 
   it("cancels a pending sync-back when a new action arrives in the window", async () => {
     const t = new Throttler();
 
-    let a_syncs = 0;
-    let b_syncs = 0;
+    let aSyncs = 0;
+    let bSyncs = 0;
 
     t.do(async () => {}, {
-      sync_back: () => {
-        a_syncs++;
+      syncBack: () => {
+        aSyncs++;
       },
-      sync_back_after: 60,
+      syncBackAfter: 60,
     });
     await sleep(20);
     t.do(async () => {}, {
-      sync_back: () => {
-        b_syncs++;
+      syncBack: () => {
+        bSyncs++;
       },
-      sync_back_after: 60,
+      syncBackAfter: 60,
     });
 
     await sleep(50);
-    expect(a_syncs).toBe(0);
-    expect(b_syncs).toBe(0);
+    expect(aSyncs).toBe(0);
+    expect(bSyncs).toBe(0);
 
     await sleep(80);
-    expect(a_syncs).toBe(0);
-    expect(b_syncs).toBe(1);
+    expect(aSyncs).toBe(0);
+    expect(bSyncs).toBe(1);
   });
 });

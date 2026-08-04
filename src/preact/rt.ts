@@ -10,47 +10,47 @@ import { Throttler } from "rtui";
 import { ErrHandlerCtx } from "./err_context.ts";
 
 export default function useRT<T>(opts: {
-  real_val: T;
-  on_new_user_val: (v: T) => Promise<void>;
-  sync_back_after?: number;
+  realVal: T;
+  onNewUserVal: (v: T) => Promise<void>;
+  syncBackAfter?: number;
 }): [T, Dispatch<StateUpdater<T>>] {
   const throttler = useRef(new Throttler());
-  const err_handler = useContext(ErrHandlerCtx);
+  const errHandler = useContext(ErrHandlerCtx);
 
-  const { real_val, on_new_user_val, sync_back_after } = opts;
-  const [user_val, set_user_val] = useState(real_val); // initial
-  const [user_mirrors_real, set_user_mirrors_real] = useState(true);
+  const { realVal, onNewUserVal, syncBackAfter } = opts;
+  const [userVal, setUserVal] = useState(realVal); // initial
+  const [userMirrorsReal, setUserMirrorsReal] = useState(true);
 
-  const syncing_user_to_real = useRef(true);
+  const syncingUserToReal = useRef(true);
 
   useEffect(() => {
-    if (syncing_user_to_real.current) {
-      // this change came from initialisation or sync_user_to_real(), not the user
-      syncing_user_to_real.current = false;
+    if (syncingUserToReal.current) {
+      // this change came from initialisation or syncUserToReal(), not the user
+      syncingUserToReal.current = false;
       return;
     }
 
     throttler.current.do(
       async () => {
-        set_user_mirrors_real(false);
-        await on_new_user_val(user_val);
+        setUserMirrorsReal(false);
+        await onNewUserVal(userVal);
       },
       {
-        sync_back: () => set_user_mirrors_real(true),
-        sync_back_after: sync_back_after,
-        err_handler: err_handler,
+        syncBack: () => setUserMirrorsReal(true),
+        syncBackAfter: syncBackAfter,
+        errHandler: errHandler,
       },
     );
-  }, [user_val]);
+  }, [userVal]);
 
-  const sync_user_to_real = () => {
-    if (user_mirrors_real && user_val !== real_val) {
-      syncing_user_to_real.current = true;
-      set_user_val(real_val);
+  const syncUserToReal = () => {
+    if (userMirrorsReal && userVal !== realVal) {
+      syncingUserToReal.current = true;
+      setUserVal(realVal);
     }
   };
 
-  useEffect(sync_user_to_real, [real_val, user_mirrors_real]);
+  useEffect(syncUserToReal, [realVal, userMirrorsReal]);
 
-  return [user_val, set_user_val];
+  return [userVal, setUserVal];
 }
