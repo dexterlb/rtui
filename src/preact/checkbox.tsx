@@ -7,7 +7,7 @@ export type CheckboxProps = {
   label: string;
   className?: string;
   onNewUserVal?: (checked: boolean) => Promise<void>;
-  resetAfter?: number;
+  syncBackAfter?: number;
 };
 
 export function Checkbox(props: CheckboxProps) {
@@ -15,7 +15,7 @@ export function Checkbox(props: CheckboxProps) {
   const [req, setReq] = useRT({
     realVal: props.checked,
     onNewUserVal: props.onNewUserVal ?? (async () => {}),
-    syncBackAfter: props.resetAfter,
+    syncBackAfter: props.syncBackAfter,
   });
 
   useEffect(() => {

@@ -8,7 +8,7 @@ export type SliderProps = {
   max: number;
   className?: string;
   onNewUserVal?: (value: number) => Promise<void>;
-  resetAfter?: number;
+  syncBackAfter?: number;
   direction: "vertical" | "horizontal";
   extraIndicators?: [string, number][]; // list of tuples key -> coef to display in addition to 'real' and 'user'
 };
@@ -19,7 +19,7 @@ export function Slider(props: SliderProps) {
   const [req, setReq] = useRT({
     realVal: props.value,
     onNewUserVal: props.onNewUserVal ?? (async () => {}),
-    syncBackAfter: props.resetAfter,
+    syncBackAfter: props.syncBackAfter,
   });
 
   const pct = (value: number) => {
