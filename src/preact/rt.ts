@@ -6,13 +6,15 @@ import {
   type Dispatch,
   type StateUpdater,
 } from "preact/hooks";
+import { Signal } from '@preact/signals';
+
 import { Throttler } from "rtui";
 import { ErrHandlerCtx } from "./err_context.ts";
 
 export default function useRT<T>(opts: {
   realVal: T;
   onNewUserVal: (v: T) => Promise<void>;
-  syncBackAfter?: number;
+  syncBackAfter: undefined | number | Signal<number | undefined>;
 }): [T, Dispatch<StateUpdater<T>>] {
   const throttler = useRef(new Throttler());
   const errHandler = useContext(ErrHandlerCtx);
@@ -37,11 +39,11 @@ export default function useRT<T>(opts: {
       },
       {
         syncBack: () => setUserMirrorsReal(true),
-        syncBackAfter: syncBackAfter,
+        syncBackAfter: open_signal(syncBackAfter),
         errHandler: errHandler,
       },
     );
-  }, [userVal]);
+  }, [userVal, open_signal(syncBackAfter)]);
 
   const syncUserToReal = () => {
     if (userMirrorsReal && userVal !== realVal) {
@@ -53,4 +55,11 @@ export default function useRT<T>(opts: {
   useEffect(syncUserToReal, [realVal, userMirrorsReal]);
 
   return [userVal, setUserVal];
+}
+
+function open_signal<T>(v: T | Signal<T>): T {
+  if (v instanceof Signal) {
+    return v.value;
+  }
+  return v;
 }

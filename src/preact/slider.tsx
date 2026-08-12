@@ -1,5 +1,6 @@
 /** @jsxImportSource preact */
 import { useState } from "preact/hooks";
+import { useSignal } from '@preact/signals';
 import useRT from "./rt.ts";
 
 export type SliderProps = {
@@ -9,6 +10,7 @@ export type SliderProps = {
   className?: string;
   onNewUserVal?: (value: number) => Promise<void>;
   syncBackAfter?: number;
+  syncBackAfterDuringDrag?: number;
   direction: "vertical" | "horizontal";
   extraIndicators?: [string, number][]; // list of tuples key -> coef to display in addition to 'real' and 'user'
 };
@@ -16,10 +18,12 @@ export type SliderProps = {
 export function Slider(props: SliderProps) {
   const [dragging, setDragging] = useState(false);
 
+  const syncBackAfter = useSignal(props.syncBackAfter);
+
   const [req, setReq] = useRT({
     realVal: props.value,
     onNewUserVal: props.onNewUserVal ?? (async () => {}),
-    syncBackAfter: props.syncBackAfter,
+    syncBackAfter: syncBackAfter,
   });
 
   const pct = (value: number) => {
@@ -51,6 +55,9 @@ export function Slider(props: SliderProps) {
   };
 
   const handlePointerDown = (e: PointerEvent) => {
+    if (props.syncBackAfterDuringDrag !== undefined) {
+      syncBackAfter.value = props.syncBackAfterDuringDrag;
+    }
     setDragging(true);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     handlePointerCommit(e);
@@ -61,8 +68,10 @@ export function Slider(props: SliderProps) {
   };
 
   const handlePointerUp = (e: PointerEvent) => {
+    syncBackAfter.value = props.syncBackAfter;
     setDragging(false);
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    handlePointerCommit(e);
   };
 
   const { extraIndicators, value } = props;
