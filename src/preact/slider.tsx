@@ -1,6 +1,6 @@
 /** @jsxImportSource preact */
 import { useState } from "preact/hooks";
-import { useSignal } from '@preact/signals';
+import { useSignal } from "@preact/signals";
 import useRT from "./rt.ts";
 
 export type SliderProps = {
@@ -33,11 +33,11 @@ export function Slider(props: SliderProps) {
   };
 
   const barStyle = (value: number) => {
-    const size = `${pct(value)}%`;
+    const size = `${100 - pct(value)}%`;
     if (props.direction == "vertical") {
-      return { height: size };
+      return { top: size };
     } else {
-      return { width: size };
+      return { right: size };
     }
   };
 
