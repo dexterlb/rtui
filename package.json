@@ -11,7 +11,7 @@
     "test": "tsc --noEmit && vitest run",
     "format": "prettier --write ."
   },
-  "dependencies": {
+  "peerDependencies": {
     "@preact/signals": "^2.11.0",
     "preact": "^10.29.8"
   },
