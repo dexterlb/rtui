@@ -6,6 +6,7 @@ export type CheckboxProps = {
   checked: boolean;
   label: string;
   className?: string;
+  disabled?: boolean;
   onNewUserVal?: (checked: boolean) => Promise<void>;
   syncBackAfter?: number;
 };
@@ -28,8 +29,13 @@ export function Checkbox(props: CheckboxProps) {
 
   return (
     <span
-      className={["checkbox", bc, props.className].filter(Boolean).join(" ")}
-      onClick={() => setReq(!req)}
+      className={["checkbox", bc, props.disabled && "disabled", props.className]
+        .filter(Boolean)
+        .join(" ")}
+      onClick={() => {
+        if (props.disabled) return;
+        setReq(!req);
+      }}
     >
       {props.label}
     </span>

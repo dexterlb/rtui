@@ -6,6 +6,7 @@ export type ChoiceProps = {
   options: string[];
   value: string;
   className?: string;
+  disabled?: boolean;
   transform?: (option: string) => ComponentChildren;
   onNewUserVal?: (value: string) => Promise<void>;
   syncBackAfter?: number;
@@ -21,7 +22,11 @@ export function Choice(props: ChoiceProps) {
   });
 
   return (
-    <div className={["choice", props.className].filter(Boolean).join(" ")}>
+    <div
+      className={["choice", props.disabled && "disabled", props.className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {props.options.map((option) => {
         const cls = [
           "option",
@@ -31,7 +36,14 @@ export function Choice(props: ChoiceProps) {
           .filter(Boolean)
           .join(" ");
         return (
-          <span key={option} className={cls} onClick={() => setReq(option)}>
+          <span
+            key={option}
+            className={cls}
+            onClick={() => {
+              if (props.disabled) return;
+              setReq(option);
+            }}
+          >
             {transform(option)}
           </span>
         );

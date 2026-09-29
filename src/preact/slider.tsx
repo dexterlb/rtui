@@ -8,6 +8,7 @@ export type SliderProps = {
   min: number;
   max: number;
   className?: string;
+  disabled?: boolean;
   onNewUserVal?: (value: number) => Promise<void>;
   syncBackAfter?: number;
   syncBackAfterDuringDrag?: number;
@@ -55,6 +56,7 @@ export function Slider(props: SliderProps) {
   };
 
   const handlePointerDown = (e: PointerEvent) => {
+    if (props.disabled) return;
     if (props.syncBackAfterDuringDrag !== undefined) {
       syncBackAfter.value = props.syncBackAfterDuringDrag;
     }
@@ -64,10 +66,12 @@ export function Slider(props: SliderProps) {
   };
 
   const handlePointerMove = (e: PointerEvent) => {
+    if (props.disabled) return;
     if (dragging) handlePointerCommit(e);
   };
 
   const handlePointerUp = (e: PointerEvent) => {
+    if (props.disabled) return;
     syncBackAfter.value = props.syncBackAfter;
     setDragging(false);
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
@@ -78,7 +82,12 @@ export function Slider(props: SliderProps) {
 
   return (
     <div
-      className={["slider", props.direction, props.className]
+      className={[
+        "slider",
+        props.direction,
+        props.disabled && "disabled",
+        props.className,
+      ]
         .filter(Boolean)
         .join(" ")}
       onPointerDown={handlePointerDown}

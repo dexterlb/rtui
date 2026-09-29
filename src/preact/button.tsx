@@ -6,6 +6,7 @@ import { ErrHandlerCtx } from "./err_context.ts";
 export type ButtonProps = {
   label: string | VNode;
   className?: string;
+  disabled?: boolean;
   action: () => Promise<void>;
 };
 
@@ -23,6 +24,7 @@ export function Button(props: ButtonProps) {
   };
 
   const doAction = () => {
+    if (props.disabled) return;
     setBusy(true);
     props.action().then(succeed).catch(fail);
   };
@@ -31,8 +33,10 @@ export function Button(props: ButtonProps) {
 
   return (
     <button
-      className={[busyClass, props.className].filter(Boolean).join(" ")}
-      disabled={busy}
+      className={[busyClass, props.disabled && "disabled", props.className]
+        .filter(Boolean)
+        .join(" ")}
+      disabled={busy || props.disabled}
       onClick={doAction}
     >
       {props.label}
