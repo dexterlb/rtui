@@ -10,6 +10,7 @@ export type SliderProps = {
   className?: string;
   disabled?: boolean;
   onNewUserVal?: (value: number) => Promise<void>;
+  onRelease?: () => number | void; // when set, releasing the pointer requests the returned value (or the real value) instead of the position under the pointer
   syncBackAfter?: number;
   syncBackAfterDuringDrag?: number;
   direction: "vertical" | "horizontal";
@@ -75,7 +76,11 @@ export function Slider(props: SliderProps) {
     syncBackAfter.value = props.syncBackAfter;
     setDragging(false);
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    handlePointerCommit(e);
+    if (props.onRelease) {
+      setReq(props.onRelease() ?? props.value);
+    } else {
+      handlePointerCommit(e);
+    }
   };
 
   const { extraIndicators, value } = props;
