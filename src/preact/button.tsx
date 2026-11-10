@@ -5,7 +5,7 @@ import { ErrHandlerCtx } from "./err_context.ts";
 
 export type ButtonProps = {
   label: string | VNode;
-  className?: string;
+  class?: string;
   disabled?: boolean;
   action: () => Promise<void>;
 };
@@ -33,7 +33,7 @@ export function Button(props: ButtonProps) {
 
   return (
     <button
-      className={[busyClass, props.disabled && "disabled", props.className]
+      class={[busyClass, props.disabled && "disabled", props.class]
         .filter(Boolean)
         .join(" ")}
       disabled={busy || props.disabled}

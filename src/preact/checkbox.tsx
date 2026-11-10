@@ -5,7 +5,7 @@ import useRT from "./rt.ts";
 export type CheckboxProps = {
   checked: boolean;
   label: string;
-  className?: string;
+  class?: string;
   disabled?: boolean;
   onNewUserVal?: (checked: boolean) => Promise<void>;
   syncBackAfter?: number;
@@ -29,7 +29,7 @@ export function Checkbox(props: CheckboxProps) {
 
   return (
     <span
-      className={["checkbox", bc, props.disabled && "disabled", props.className]
+      class={["checkbox", bc, props.disabled && "disabled", props.class]
         .filter(Boolean)
         .join(" ")}
       onClick={() => {

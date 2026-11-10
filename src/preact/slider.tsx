@@ -7,7 +7,7 @@ export type SliderProps = {
   value: number;
   min: number;
   max: number;
-  className?: string;
+  class?: string;
   disabled?: boolean;
   onNewUserVal?: (value: number) => Promise<void>;
   onRelease?: () => number | void; // when set, releasing the pointer requests the returned value (or the real value) instead of the position under the pointer
@@ -87,11 +87,11 @@ export function Slider(props: SliderProps) {
 
   return (
     <div
-      className={[
+      class={[
         "slider",
         props.direction,
         props.disabled && "disabled",
-        props.className,
+        props.class,
       ]
         .filter(Boolean)
         .join(" ")}
@@ -99,10 +99,10 @@ export function Slider(props: SliderProps) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     >
-      <div className="real" style={barStyle(value)} />
-      <div className="user" style={barStyle(req)} />
+      <div class="real" style={barStyle(value)} />
+      <div class="user" style={barStyle(req)} />
       {extraIndicators?.map(([cls, v]) => (
-        <div key={cls} className={cls} style={barStyle(v)} />
+        <div key={cls} class={cls} style={barStyle(v)} />
       ))}
     </div>
   );

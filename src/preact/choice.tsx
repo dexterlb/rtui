@@ -5,7 +5,7 @@ import useRT from "./rt.ts";
 export type ChoiceProps = {
   options: string[];
   value: string;
-  className?: string;
+  class?: string;
   disabled?: boolean;
   transform?: (option: string) => ComponentChildren;
   onNewUserVal?: (value: string) => Promise<void>;
@@ -23,7 +23,7 @@ export function Choice(props: ChoiceProps) {
 
   return (
     <div
-      className={["choice", props.disabled && "disabled", props.className]
+      class={["choice", props.disabled && "disabled", props.class]
         .filter(Boolean)
         .join(" ")}
     >
@@ -38,7 +38,7 @@ export function Choice(props: ChoiceProps) {
         return (
           <span
             key={option}
-            className={cls}
+            class={cls}
             onClick={() => {
               if (props.disabled) return;
               setReq(option);
